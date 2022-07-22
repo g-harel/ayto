@@ -1,32 +1,34 @@
 const {printTable} = require("console-table-printer");
 
 const numWeeks = 10;
-const numCouples = 10;
+const numCouples = 11;
 
 enum Boy {
-    Asaf = "Asaf",
-    Cam = "Cam",
-    Cameron = "Cameron",
-    Giovanni = "Giovanni",
-    John = "John",
-    Morgan = "Morgan",
-    Prosper = "Prosper",
-    Sam = "Sam",
-    Stephen = "Stephen",
+    Anthony = "Anthony",
+    Clinton = "Clinton",
+    Dimitri = "Dimitri",
+    Ethan = "Ethan",
+    Joe = "Joe",
+    Kareem = "Kareem",
+    Keith = "Keith",
+    Malcolm = "Malcolm",
+    Michael = "Michael",
+    Shad = "Shad",
     Tyler = "Tyler",
 }
 
 enum Girl {
-    Alyssa = "Alyssa",
-    Camille = "Camille",
-    Emma = "Emma",
-    Francesca = "Francesca",
-    Julia = "Julia",
-    Kaylen = "Kaylen",
-    Mikala = "Mikala",
+    Alexis = "Alexis",
+    Alivia = "Alivia",
+    Audrey = "Audrey",
+    Diandra = "Diandra",
+    Geles = "Geles",
+    Jada = "Jada",
+    Keyana = "Keyana",
     Nicole = "Nicole",
-    Tori = "Tori",
-    Victoria = "Victoria",
+    Nurys = "Nurys",
+    Uche = "Uche",
+    Zoe = "Zoe",
 }
 
 const boys = Object.keys(Boy);
@@ -50,10 +52,27 @@ interface BeamCeremonyEvent {
     couples: Couple[];
 }
 
+interface Week {
+    booths: TruthBoothEvent[];
+    beams: BeamCeremonyEvent;
+}
+
 type Matrix<T> = {
     [boy in Boy]: {
         [girl in Girl]: T;
     };
+};
+
+const flatten = (weeks: Week[]): [BeamCeremonyEvent[], TruthBoothEvent[]] => {
+    const ceremonies: BeamCeremonyEvent[] = [];
+    const booths: TruthBoothEvent[] = [];
+
+    for (const week of weeks) {
+        ceremonies.push(week.beams);
+        booths.push(...week.booths);
+    }
+
+    return [ceremonies, booths];
 };
 
 const calculateOdds = (
@@ -109,32 +128,44 @@ const calculateOdds = (
     return result;
 };
 
-const flatten = <T>(matrix: Matrix<T>): any[] => {
-    return Object.entries(matrix).map(([key, value]) => {
-        return Object.assign({" ": key}, value);
-    });
+const printMatrix = <T>(matrix: Matrix<T>) => {
+    // TODO 202-07-22 round values and convert to percentage.
+    // const flattened = Object.entries(matrix).map(([key, value]) => {
+    //     return Object.assign({" ": key}, value);
+    // });
+
+    printTable(
+        Object.entries(matrix).map(([key, value]) => {
+            return Object.assign({" ": key}, value);
+        }),
+    );
 };
 
-printTable(
-    flatten(
-        calculateOdds(
-            [
-                {
+printMatrix(
+    calculateOdds(
+        ...flatten([
+            // Week 1
+            {
+                beams: {
                     beamCount: 1,
                     couples: [
-                        {boy: Boy.Cam, girl: Girl.Emma},
-                        {boy: Boy.Prosper, girl: Girl.Mikala},
+                        {boy: Boy.Anthony, girl: Girl.Geles},
+                        {boy: Boy.Clinton, girl: Girl.Uche},
+                        {boy: Boy.Dimitri, girl: Girl.Diandra},
+                        {boy: Boy.Ethan, girl: Girl.Jada},
+                        {boy: Boy.Joe, girl: Girl.Zoe},
+                        {boy: Boy.Kareem, girl: Girl.Alivia},
+                        {boy: Boy.Keith, girl: Girl.Alexis},
+                        {boy: Boy.Malcolm, girl: Girl.Nurys},
+                        {boy: Boy.Michael, girl: Girl.Keyana},
+                        {boy: Boy.Shad, girl: Girl.Audrey},
+                        {boy: Boy.Tyler, girl: Girl.Nicole},
                     ],
                 },
-                {
-                    beamCount: 1,
-                    couples: [
-                        {boy: Boy.Cam, girl: Girl.Emma},
-                        {boy: Boy.Prosper, girl: Girl.Victoria},
-                    ],
-                },
-            ],
-            [{isPerfectMatch: true, boy: Boy.Asaf, girl: Girl.Alyssa}],
-        ),
+                booths: [
+                    {boy: Boy.Ethan, girl: Girl.Keyana, isPerfectMatch: false},
+                ],
+            },
+        ]),
     ),
 );
