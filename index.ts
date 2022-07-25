@@ -63,11 +63,14 @@ type Matrix<T> = {
     };
 };
 
-const flatten = (weeks: Week[]): [BeamCeremonyEvent[], TruthBoothEvent[]] => {
+const flatten = (
+    keepWeeks: number,
+    weeks: Week[],
+): [BeamCeremonyEvent[], TruthBoothEvent[]] => {
     const ceremonies: BeamCeremonyEvent[] = [];
     const booths: TruthBoothEvent[] = [];
 
-    for (const week of weeks) {
+    for (const week of weeks.slice(0, keepWeeks + 1)) {
         ceremonies.push(week.beams);
         booths.push(...week.booths);
     }
@@ -143,7 +146,7 @@ const printMatrix = <T>(matrix: Matrix<T>) => {
 
 printMatrix(
     calculateOdds(
-        ...flatten([
+        ...flatten(1, [
             // Week 1
             {
                 beams: {
